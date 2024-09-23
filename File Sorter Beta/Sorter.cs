@@ -337,7 +337,7 @@ namespace File_Sorter_Beta
                 create_directories();
                 sortedCount = sortinto_directories();
             }
-            btn_UndoSort.Enabled = true;
+            btn_UndoSort.Visible = true;
 
             MessageBox.Show($"Sort Successful\nMoved {sortedCount} files");
         }

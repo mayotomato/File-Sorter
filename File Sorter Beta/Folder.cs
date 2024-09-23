@@ -19,18 +19,18 @@ namespace File_Sorter_Beta
         //Constructors
         public Folder(string aName)
         {
-            this.name = aName;
-            this.isSorting = false;
-            this.extensions = new List<Extension>();
+            this.Name = aName;
+            this.IsSorting = false;
+            this.Extensions = new List<Extension>();
 
             folders.Add(this);
         }
 
         public Folder(string aName, List<Extension> aExtensions)
         {
-            this.name = aName;
-            this.isSorting = false;
-            this.extensions = aExtensions;
+            this.Name = aName;
+            this.IsSorting = false;
+            this.Extensions = aExtensions;
 
 
             folders.Add(this);
@@ -38,9 +38,9 @@ namespace File_Sorter_Beta
 
         public Folder(string aName, List<Extension> aExtensions, bool Sorting)
         {
-            this.name = aName;
-            this.isSorting = Sorting;
-            this.extensions = aExtensions;
+            this.Name = aName;
+            this.IsSorting = Sorting;
+            this.Extensions = aExtensions;
 
 
             folders.Add(this);
@@ -48,9 +48,9 @@ namespace File_Sorter_Beta
 
         public Folder(string aName, List<Extension> aExtensions, bool Sorting, string[] aExtensionFormats)
         {
-            this.name = aName;
-            this.isSorting = Sorting;
-            this.extensions = aExtensions;
+            this.Name = aName;
+            this.IsSorting = Sorting;
+            this.Extensions = aExtensions;
             this.extensionFormats = aExtensionFormats.ToList();
 
 

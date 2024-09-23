@@ -41,6 +41,11 @@
             this.btn_UndoSort = new System.Windows.Forms.Button();
             this.btn_RemoveFolder = new System.Windows.Forms.Button();
             this.btn_RemoveExtension = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btn_SavePreset = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // chcklistbox_Folders
@@ -88,7 +93,7 @@
             // 
             // btn_AddFolder
             // 
-            this.btn_AddFolder.Location = new System.Drawing.Point(12, 318);
+            this.btn_AddFolder.Location = new System.Drawing.Point(148, 292);
             this.btn_AddFolder.Name = "btn_AddFolder";
             this.btn_AddFolder.Size = new System.Drawing.Size(110, 32);
             this.btn_AddFolder.TabIndex = 4;
@@ -98,7 +103,7 @@
             // 
             // btn_AddExtension
             // 
-            this.btn_AddExtension.Location = new System.Drawing.Point(276, 318);
+            this.btn_AddExtension.Location = new System.Drawing.Point(410, 292);
             this.btn_AddExtension.Name = "btn_AddExtension";
             this.btn_AddExtension.Size = new System.Drawing.Size(112, 32);
             this.btn_AddExtension.TabIndex = 5;
@@ -108,7 +113,7 @@
             // 
             // txtbox_Name
             // 
-            this.txtbox_Name.Location = new System.Drawing.Point(55, 404);
+            this.txtbox_Name.Location = new System.Drawing.Point(278, 409);
             this.txtbox_Name.Name = "txtbox_Name";
             this.txtbox_Name.Size = new System.Drawing.Size(228, 20);
             this.txtbox_Name.TabIndex = 6;
@@ -116,7 +121,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 407);
+            this.label1.Location = new System.Drawing.Point(237, 412);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 7;
@@ -125,7 +130,7 @@
             // lbl_testing
             // 
             this.lbl_testing.AutoSize = true;
-            this.lbl_testing.Location = new System.Drawing.Point(46, 458);
+            this.lbl_testing.Location = new System.Drawing.Point(273, 452);
             this.lbl_testing.Name = "lbl_testing";
             this.lbl_testing.Size = new System.Drawing.Size(35, 13);
             this.lbl_testing.TabIndex = 8;
@@ -144,18 +149,18 @@
             // 
             // btn_UndoSort
             // 
-            this.btn_UndoSort.Enabled = false;
             this.btn_UndoSort.Location = new System.Drawing.Point(432, 479);
             this.btn_UndoSort.Name = "btn_UndoSort";
             this.btn_UndoSort.Size = new System.Drawing.Size(90, 32);
             this.btn_UndoSort.TabIndex = 10;
             this.btn_UndoSort.Text = "Undo";
             this.btn_UndoSort.UseVisualStyleBackColor = true;
+            this.btn_UndoSort.Visible = false;
             this.btn_UndoSort.Click += new System.EventHandler(this.btn_UndoSort_Click);
             // 
             // btn_RemoveFolder
             // 
-            this.btn_RemoveFolder.Location = new System.Drawing.Point(12, 356);
+            this.btn_RemoveFolder.Location = new System.Drawing.Point(148, 330);
             this.btn_RemoveFolder.Name = "btn_RemoveFolder";
             this.btn_RemoveFolder.Size = new System.Drawing.Size(110, 32);
             this.btn_RemoveFolder.TabIndex = 11;
@@ -165,7 +170,7 @@
             // 
             // btn_RemoveExtension
             // 
-            this.btn_RemoveExtension.Location = new System.Drawing.Point(276, 356);
+            this.btn_RemoveExtension.Location = new System.Drawing.Point(410, 330);
             this.btn_RemoveExtension.Name = "btn_RemoveExtension";
             this.btn_RemoveExtension.Size = new System.Drawing.Size(112, 32);
             this.btn_RemoveExtension.TabIndex = 12;
@@ -173,11 +178,50 @@
             this.btn_RemoveExtension.UseVisualStyleBackColor = true;
             this.btn_RemoveExtension.Click += new System.EventHandler(this.btn_RemoveExtension_Click);
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(49, 22);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(149, 21);
+            this.comboBox1.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 26);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(37, 13);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Preset";
+            // 
+            // btn_SavePreset
+            // 
+            this.btn_SavePreset.Enabled = false;
+            this.btn_SavePreset.Location = new System.Drawing.Point(108, 131);
+            this.btn_SavePreset.Name = "btn_SavePreset";
+            this.btn_SavePreset.Size = new System.Drawing.Size(90, 32);
+            this.btn_SavePreset.TabIndex = 15;
+            this.btn_SavePreset.Text = "Save";
+            this.btn_SavePreset.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.btn_SavePreset);
+            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Location = new System.Drawing.Point(12, 386);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(207, 167);
+            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabStop = false;
+            // 
             // Sorter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 561);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_RemoveExtension);
             this.Controls.Add(this.btn_RemoveFolder);
             this.Controls.Add(this.btn_UndoSort);
@@ -195,6 +239,8 @@
             this.Name = "Sorter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Beta";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -215,6 +261,10 @@
         private System.Windows.Forms.Button btn_UndoSort;
         private System.Windows.Forms.Button btn_RemoveFolder;
         private System.Windows.Forms.Button btn_RemoveExtension;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btn_SavePreset;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

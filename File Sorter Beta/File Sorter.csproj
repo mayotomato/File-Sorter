@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Extension.cs" />
     <Compile Include="Folder.cs" />
+    <Compile Include="Preset.cs" />
     <Compile Include="Sorter.cs">
       <SubType>Form</SubType>
     </Compile>

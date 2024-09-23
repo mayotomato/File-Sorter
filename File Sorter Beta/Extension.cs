@@ -18,8 +18,8 @@ namespace File_Sorter_Beta
         //Constructors
         public Extension(string aFormat)
         {
-            this.format = aFormat;
-            this.isSorting = false;
+            this.Format = aFormat;
+            this.IsSorting = false;
 
             extensions.Add(this);
         }
@@ -35,8 +35,8 @@ namespace File_Sorter_Beta
 
         public Extension(string aFormat, bool Sorting)
         {
-            this.format = aFormat;
-            this.isSorting = Sorting;
+            this.Format = aFormat;
+            this.IsSorting = Sorting;
 
             extensions.Add(this);
         }
