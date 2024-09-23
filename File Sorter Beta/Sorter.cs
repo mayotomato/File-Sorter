@@ -239,11 +239,14 @@ namespace File_Sorter_Beta
 
 
         //-------------------General-------------------
+
+        //Adding new folder button
         private void btn_AddFolder_Click(object sender, EventArgs e)
         {
             addNewFolder();
         }
 
+        //Adding new extension button
         private void btn_AddExtension_Click(object sender, EventArgs e)
         {
             addNewExtension();
@@ -275,6 +278,7 @@ namespace File_Sorter_Beta
             chcklistbox_Folders_Reload();
         }
 
+        //Selecting folder with use of FileBrowserDialog
         private void btn_selectFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog fbd = new FolderBrowserDialog())
@@ -289,6 +293,7 @@ namespace File_Sorter_Beta
             }
         }
 
+        //Sorting button executing sorting methods
         private void btn_sort_Click(object sender, EventArgs e)
         {
             int sortedCount = 0;
