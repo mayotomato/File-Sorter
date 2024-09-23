@@ -38,6 +38,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_testing = new System.Windows.Forms.Label();
             this.chckbox_allExtensions = new System.Windows.Forms.CheckBox();
+            this.btn_UndoSort = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // chcklistbox_Folders
@@ -139,11 +140,23 @@
             this.chckbox_allExtensions.UseVisualStyleBackColor = true;
             this.chckbox_allExtensions.MouseClick += new System.Windows.Forms.MouseEventHandler(this.chckbox_allExtensions_MouseClick);
             // 
-            // Beta
+            // btn_UndoSort
+            // 
+            this.btn_UndoSort.Enabled = false;
+            this.btn_UndoSort.Location = new System.Drawing.Point(432, 479);
+            this.btn_UndoSort.Name = "btn_UndoSort";
+            this.btn_UndoSort.Size = new System.Drawing.Size(90, 32);
+            this.btn_UndoSort.TabIndex = 10;
+            this.btn_UndoSort.Text = "Undo";
+            this.btn_UndoSort.UseVisualStyleBackColor = true;
+            this.btn_UndoSort.Click += new System.EventHandler(this.btn_UndoSort_Click);
+            // 
+            // Sorter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 561);
+            this.Controls.Add(this.btn_UndoSort);
             this.Controls.Add(this.chckbox_allExtensions);
             this.Controls.Add(this.lbl_testing);
             this.Controls.Add(this.label1);
@@ -155,7 +168,7 @@
             this.Controls.Add(this.chcklistbox_Extensions);
             this.Controls.Add(this.chcklistbox_Folders);
             this.MaximizeBox = false;
-            this.Name = "Beta";
+            this.Name = "Sorter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Beta";
             this.ResumeLayout(false);
@@ -175,6 +188,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lbl_testing;
         private System.Windows.Forms.CheckBox chckbox_allExtensions;
+        private System.Windows.Forms.Button btn_UndoSort;
     }
 }
 
