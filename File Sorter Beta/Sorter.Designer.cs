@@ -41,9 +41,8 @@
             this.btn_UndoSort = new System.Windows.Forms.Button();
             this.btn_RemoveFolder = new System.Windows.Forms.Button();
             this.btn_RemoveExtension = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cmbobox_Preset = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.btn_SavePreset = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -178,13 +177,14 @@
             this.btn_RemoveExtension.UseVisualStyleBackColor = true;
             this.btn_RemoveExtension.Click += new System.EventHandler(this.btn_RemoveExtension_Click);
             // 
-            // comboBox1
+            // cmbobox_Preset
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(49, 22);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(149, 21);
-            this.comboBox1.TabIndex = 13;
+            this.cmbobox_Preset.FormattingEnabled = true;
+            this.cmbobox_Preset.Location = new System.Drawing.Point(49, 22);
+            this.cmbobox_Preset.Name = "cmbobox_Preset";
+            this.cmbobox_Preset.Size = new System.Drawing.Size(149, 21);
+            this.cmbobox_Preset.TabIndex = 13;
+            this.cmbobox_Preset.SelectedIndexChanged += new System.EventHandler(this.cmbobox_Preset_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -195,21 +195,10 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "Preset";
             // 
-            // btn_SavePreset
-            // 
-            this.btn_SavePreset.Enabled = false;
-            this.btn_SavePreset.Location = new System.Drawing.Point(108, 131);
-            this.btn_SavePreset.Name = "btn_SavePreset";
-            this.btn_SavePreset.Size = new System.Drawing.Size(90, 32);
-            this.btn_SavePreset.TabIndex = 15;
-            this.btn_SavePreset.Text = "Save";
-            this.btn_SavePreset.UseVisualStyleBackColor = true;
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.btn_SavePreset);
-            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.cmbobox_Preset);
             this.groupBox1.Location = new System.Drawing.Point(12, 386);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(207, 167);
@@ -239,6 +228,7 @@
             this.Name = "Sorter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Beta";
+            this.Load += new System.EventHandler(this.Sorter_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -261,9 +251,8 @@
         private System.Windows.Forms.Button btn_UndoSort;
         private System.Windows.Forms.Button btn_RemoveFolder;
         private System.Windows.Forms.Button btn_RemoveExtension;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cmbobox_Preset;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btn_SavePreset;
         private System.Windows.Forms.GroupBox groupBox1;
     }
 }

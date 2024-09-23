@@ -14,34 +14,116 @@ namespace File_Sorter_Beta
 {
     public partial class Sorter : Form
     {
-
-
+        //-----------------------------------------------Backing Fields-----------------------------------------------
 
         //Tracking current state of things
+        private Preset selectedPreset;
         private Folder selectedFolder;
         private Extension selectedExtension;
+
+        //Sorting and undoing related
         private string selectedPath;
-        private bool pathContainsAllDirectories;
         private Dictionary<string, string> recentFilesSorted;
 
         //Calculation or UI Related
         private int selectedFolderIndex;
         private int selectedExtensionIndex;
+
+        //Select all button
         private bool allExtensionsSelected;
+        private bool pathContainsAllDirectories;
+
+        //Tracking number of files sorted during sort
         private int sortedCount;
 
 
-
+        //-----------------------------------------------Constructor & Loading-----------------------------------------------
         public Sorter()
         {
             InitializeComponent();
             chcklistbox_Extensions.Items.Clear();
             chcklistbox_Folders.Items.Clear();
-            addDefaultFoldersAndExtensions();
+            create_default_preset();
+
+        }
+
+        private void Sorter_Load(object sender, EventArgs e)
+        {
+            cmbobox_Preset.Items.Add("Add Item");
         }
 
 
-        //-------------------Folders-------------------
+        //-----------------------------------------------Creating Default Preset-----------------------------------------------
+        private void create_default_preset()
+        {
+            Dictionary<string, bool> defaultFolders = Preset.getDefaultFolders();
+            Dictionary<string, string[]> defaultFoldersToExtensions = Folder.getDefaultExtensions();
+            List<Folder> folders = new List<Folder>();
+
+            foreach (var defaultFolder in defaultFolders)
+            {
+                string[] extensionFormats = defaultFoldersToExtensions[defaultFolder.Key];
+                List<Extension> extensions = new List<Extension>();
+
+                foreach (string format in extensionFormats)
+                {
+                    Extension extension = new Extension(format, defaultFolder.Value);
+                    extensions.Add(extension);
+                }
+
+                Folder folder = new Folder(defaultFolder.Key, extensions, defaultFolder.Value, extensionFormats);
+                folders.Add(folder);
+            }
+
+            Preset defaultPreset = new Preset("Default", folders);
+
+            //Setting up the selected preset, folder, and extension
+            selectedPreset = defaultPreset;
+            selectedFolder = Folder.getFolders()[0];
+            selectedExtension = Extension.getExtensions()[0];
+
+            //Forms stuff
+            cmbobox_Preset.Items.Insert(0, selectedPreset.ToString());
+            cmbobox_Preset.SelectedIndex = 0;
+            chcklistbox_Folders_Reload();
+        }
+
+
+        //-----------------------------------------------Presets-----------------------------------------------
+        private void detect_changes()
+        {
+            
+        }
+
+        private void cmbobox_Preset_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedItem = cmbobox_Preset.SelectedItem as string;
+            if (selectedItem != null && selectedItem == "Add Item")
+            {
+                NewPreset menu = new NewPreset();
+                menu.ShowDialog();
+
+                Preset newPreset = menu.getNewPreset;
+                int newIndex = cmbobox_Preset.Items.Count - 1;
+
+                cmbobox_Preset.Items.Insert(newIndex, newPreset.ToString());
+                cmbobox_Preset.SelectedIndex = newIndex;
+
+                selectedPreset = newPreset;
+
+                chcklistbox_Folders_Reload();
+                chcklistbox_Extensions.Items.Clear();
+
+                return;
+            }
+
+            selectedPreset = Preset.Presets.FirstOrDefault(p => p.Name == selectedItem);
+            chcklistbox_Folders_Reload();
+            chcklistbox_Extensions_Reload();
+        }
+
+
+        //-----------------------------------------------Folders-----------------------------------------------
         private void chcklistbox_Folders_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (chcklistbox_Folders != null)
@@ -77,7 +159,8 @@ namespace File_Sorter_Beta
         {
             chcklistbox_Folders.Items.Clear();
             chcklistbox_Folders.ClearSelected();
-            Folder[] folders = Folder.getFolders();
+            Folder[] folders = selectedPreset.Folders.ToArray();
+
             foreach (Folder folder in folders)
             {
                 int index = chcklistbox_Folders.Items.Add(folder.Name);
@@ -99,7 +182,7 @@ namespace File_Sorter_Beta
         }
 
 
-        //-------------------Extensions-------------------
+        //-----------------------------------------------Extensions-----------------------------------------------
 
         private void chcklistbox_Extensions_ItemCheck(object sender, ItemCheckEventArgs e)
         {
@@ -112,8 +195,6 @@ namespace File_Sorter_Beta
                 selectedExtension.IsSorting = selectedItemisChecked;
 
                 lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()} {allExtensionsSelected}";
-
-                
             }
             
         }
@@ -143,18 +224,26 @@ namespace File_Sorter_Beta
         {
             /*Reloading all extension objects from selected folder and displaying it on
             chcklistbox_Extensions*/
+            Folder[] folders = selectedPreset.Folders.ToArray();
 
-            chcklistbox_Extensions.Items.Clear();
-            Extension[] extensions = selectedFolder.getExtensions();
-            int allSortedChecker = 1;
-            foreach (Extension extension in extensions)
+            if (folders.Length == 0)
             {
-                int index = chcklistbox_Extensions.Items.Add(extension.Format);
-                chcklistbox_Extensions.SetItemChecked(index, extension.IsSorting);
-                allSortedChecker *= extension.IsSorting ? 1 : 0;
+                chcklistbox_Extensions.Items.Clear();
             }
-            //Checking if all items in the check list box are selected
-            allExtensionsSelected = (allSortedChecker == 1);
+            else
+            {
+                chcklistbox_Extensions.Items.Clear();
+                Extension[] extensions = selectedFolder.getExtensions();
+                int allSortedChecker = 1;
+                foreach (Extension extension in extensions)
+                {
+                    int index = chcklistbox_Extensions.Items.Add(extension.Format);
+                    chcklistbox_Extensions.SetItemChecked(index, extension.IsSorting);
+                    allSortedChecker *= extension.IsSorting ? 1 : 0;
+                }
+                //Checking if all items in the check list box are selected
+                allExtensionsSelected = (allSortedChecker == 1);
+            }
         }
 
         private void chcklistbox_Extensions_SelectAll()
@@ -178,7 +267,7 @@ namespace File_Sorter_Beta
         }
 
 
-        //-------------------Select All Button-------------------
+        //-----------------------------------------------Select All Button-----------------------------------------------
         //IloveMahin
 
         private void chckbox_allExtensions_Reload()
@@ -200,7 +289,7 @@ namespace File_Sorter_Beta
         }
 
 
-        //-------------------File Sorting-------------------
+        //-----------------------------------------------File Sorting-----------------------------------------------
         private void create_directories()
         {
             List<Folder> directories = Folder.Folders.Where(folder => folder.IsSorting).ToList();
@@ -236,8 +325,6 @@ namespace File_Sorter_Beta
                         File.Move(filePath, destinationPath);
                         recentFilesSorted.Add(destinationPath, filePath);
                         sortedCount++;
-                        Console.WriteLine(recentFilesSorted);
-                        Console.ReadLine();
                     }
                 }
             });
@@ -269,7 +356,7 @@ namespace File_Sorter_Beta
         }
 
 
-        //-------------------General-------------------
+        //-----------------------------------------------General-----------------------------------------------
 
         //Adding new folder button
         private void btn_AddFolder_Click(object sender, EventArgs e)
@@ -281,32 +368,6 @@ namespace File_Sorter_Beta
         private void btn_AddExtension_Click(object sender, EventArgs e)
         {
             addNewExtension();
-        }
-
-        //Method to add the hardcoded default folders and extensions in their respective classes
-        private void addDefaultFoldersAndExtensions()
-        {
-            Dictionary<string, bool> defaultFolders = Folder.getDefaultFolders();
-            Dictionary<string, string[]> defaultFoldersToExtensions = Extension.getDefaultExtensions();
-
-            foreach (var defaultFolder in defaultFolders)
-            {
-                string[] extensionFormats = defaultFoldersToExtensions[defaultFolder.Key];
-                List<Extension> extensions = new List<Extension>();
-
-                foreach (string format in extensionFormats)
-                {
-                    Extension extension = new Extension(format, defaultFolder.Value);
-                    extensions.Add(extension);
-                }
-
-                Folder folder = new Folder(defaultFolder.Key, extensions, defaultFolder.Value, extensionFormats);
-            }
-
-            selectedFolder = Folder.getFolders()[0];
-            selectedExtension = Extension.getExtensions()[0];
-
-            chcklistbox_Folders_Reload();
         }
 
         //Selecting folder with use of FileBrowserDialog

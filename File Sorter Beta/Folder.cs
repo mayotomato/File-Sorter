@@ -124,21 +124,73 @@ namespace File_Sorter_Beta
             return this.extensions.ToArray();
         }
 
-        public static Dictionary<string, bool> getDefaultFolders() 
+        //Default folders extensions
+        public static Dictionary<string, string[]> getDefaultExtensions()
         {
-            Dictionary<string, bool> defaultFolders = new Dictionary<string, bool>();
-            defaultFolders.Add("Compressed", true);
-            defaultFolders.Add("Database", false);
-            defaultFolders.Add("Documents", true);
-            defaultFolders.Add("Ebook", false);
-            defaultFolders.Add("Font", false);
-            defaultFolders.Add("Images", true);
-            defaultFolders.Add("Music", true);
-            defaultFolders.Add("Programs", true);
-            defaultFolders.Add("Video", true);
-            defaultFolders.Add("Web", false);
+            Dictionary<string, string[]> defaultExtensions = new Dictionary<string, string[]>();
+            defaultExtensions.Add("Compressed",
+                new string[]
+                {
+                    ".zip", ".rar", ".tar", ".gz", ".bz2", ".xz",
+                    ".7z", ".zipx", ".dmg", ".cab", ".lz"
+                });
 
-            return defaultFolders;
+            defaultExtensions.Add("Database",
+                new string[]
+                {
+                    ".sql", ".db", ".sqlite", ".mdb", ".accdb", ".mdf", ".ldf"
+                });
+
+            defaultExtensions.Add("Documents",
+                new string[]
+                {
+                    ".doc", ".docx", ".pdf", ".txt", ".rtf", ".odt", ".xls",
+                    ".xlsx", ".ppt", ".pptx", ".csv", ".json"
+                });
+
+            defaultExtensions.Add("Ebook",
+                new string[]
+                {
+                    ".epub", ".mobi", ".azw"
+                });
+
+            defaultExtensions.Add("Font",
+                new string[]
+                {
+                    ".ttf", ".otf", ".woff", ".woff2", ".eot", ".fon"
+                });
+
+            defaultExtensions.Add("Images",
+                new string[]
+                {
+                    ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg", ".ico", ".heif"
+                });
+
+            defaultExtensions.Add("Music",
+                new string[]
+                {
+                    ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma", ".m4a", ".alac", ".aiff", ".dsd"
+                });
+
+            defaultExtensions.Add("Programs",
+                new string[]
+                {
+                    ".exe", ".dll", ".bat", ".sh", ".bin", ".app", ".jar", ".msi", ".iso", ".pkg"
+                });
+
+            defaultExtensions.Add("Video",
+                new string[]
+                {
+                    ".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm", ".mpeg", ".mpg", ".ts"
+                });
+
+            defaultExtensions.Add("Web",
+                new string[]
+                {
+                    ".html", ".htm", ".css", ".js", ".xml"
+                });
+
+            return defaultExtensions;
         }
 
     }
