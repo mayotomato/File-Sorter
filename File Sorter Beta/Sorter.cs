@@ -23,12 +23,12 @@ namespace File_Sorter_Beta
         private string selectedPath;
         private bool pathContainsAllDirectories;
         private Dictionary<string, string> recentFilesSorted;
-        private List<Folder> directories;
 
         //Calculation or UI Related
         private int selectedFolderIndex;
         private int selectedExtensionIndex;
         private bool allExtensionsSelected;
+        private int sortedCount;
 
 
 
@@ -247,11 +247,24 @@ namespace File_Sorter_Beta
         //Undo last sorting
         private void undo_sortinto_directories()
         {
+            List<string> directories = Folder.Folders
+                .Where(folder => folder.IsSorting)
+                .Select(folder => folder.Name)
+                .ToList();
+
+            //Move each file back
             foreach (var recentFileSorted in recentFilesSorted)
             {
                 File.Move(recentFileSorted.Key, recentFileSorted.Value);
             }
-            //Directory.Delete();
+
+            //Delete the new directories
+            foreach (string directory in directories)
+            {
+                string path = $@"{selectedPath}\{directory}";
+                Directory.Delete(path);
+            }
+            
         }
 
 
@@ -308,7 +321,7 @@ namespace File_Sorter_Beta
 
         private void btn_sort_Click(object sender, EventArgs e)
         {
-            int sortedCount = 0;
+            sortedCount = 0;
             if (pathContainsAllDirectories)
             {
                 sortedCount = sortinto_directories();
@@ -320,13 +333,15 @@ namespace File_Sorter_Beta
             }
             btn_UndoSort.Enabled = true;
 
-            MessageBox.Show($"Sorted Successfully\nMoved {sortedCount} files");
+            MessageBox.Show($"Sort Successful\nMoved {sortedCount} files");
         }
 
         //Button to trigger undo sort method
         private void btn_UndoSort_Click(object sender, EventArgs e)
         {
             undo_sortinto_directories();
+
+            MessageBox.Show($"Undo Successful\nMoved {sortedCount} files");
         }
     }
 }
