@@ -22,11 +22,14 @@ namespace File_Sorter_Beta
         private Extension selectedExtension;
         private string selectedPath;
         private bool pathContainsAllDirectories;
+        private Dictionary<string, string> recentFilesSorted;
+        private List<Folder> directories;
 
         //Calculation or UI Related
         private int selectedFolderIndex;
         private int selectedExtensionIndex;
         private bool allExtensionsSelected;
+
 
 
         public Sorter()
@@ -217,6 +220,7 @@ namespace File_Sorter_Beta
         {
             List<Folder> directories = Folder.Folders.Where(folder => folder.IsSorting).ToList();
             string[] filePaths = Directory.GetFiles(selectedPath);
+            recentFilesSorted = new Dictionary<string, string>();
             int sortedCount = 0;
 
             Parallel.ForEach(directories, (folder) => 
@@ -229,12 +233,25 @@ namespace File_Sorter_Beta
                     {
                         string destinationPath = $@"{selectedPath}\{folder.Name}\{fileName}";
                         File.Move(filePath, destinationPath);
+                        recentFilesSorted.Add(destinationPath, filePath);
                         sortedCount++;
+                        Console.WriteLine(recentFilesSorted);
+                        Console.ReadLine();
                     }
                 }
             });
 
             return sortedCount;
+        }
+
+        //Undo last sorting
+        private void undo_sortinto_directories()
+        {
+            foreach (var recentFileSorted in recentFilesSorted)
+            {
+                File.Move(recentFileSorted.Key, recentFileSorted.Value);
+            }
+            //Directory.Delete();
         }
 
 
@@ -301,7 +318,15 @@ namespace File_Sorter_Beta
                 create_directories();
                 sortedCount = sortinto_directories();
             }
+            btn_UndoSort.Enabled = true;
+
             MessageBox.Show($"Sorted Successfully\nMoved {sortedCount} files");
+        }
+
+        //Button to trigger undo sort method
+        private void btn_UndoSort_Click(object sender, EventArgs e)
+        {
+            undo_sortinto_directories();
         }
     }
 }
