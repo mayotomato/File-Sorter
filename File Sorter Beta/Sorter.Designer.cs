@@ -39,6 +39,8 @@
             this.lbl_testing = new System.Windows.Forms.Label();
             this.chckbox_allExtensions = new System.Windows.Forms.CheckBox();
             this.btn_UndoSort = new System.Windows.Forms.Button();
+            this.btn_RemoveFolder = new System.Windows.Forms.Button();
+            this.btn_RemoveExtension = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // chcklistbox_Folders
@@ -88,7 +90,7 @@
             // 
             this.btn_AddFolder.Location = new System.Drawing.Point(12, 318);
             this.btn_AddFolder.Name = "btn_AddFolder";
-            this.btn_AddFolder.Size = new System.Drawing.Size(90, 32);
+            this.btn_AddFolder.Size = new System.Drawing.Size(110, 32);
             this.btn_AddFolder.TabIndex = 4;
             this.btn_AddFolder.Text = "Add Folder";
             this.btn_AddFolder.UseVisualStyleBackColor = true;
@@ -98,7 +100,7 @@
             // 
             this.btn_AddExtension.Location = new System.Drawing.Point(276, 318);
             this.btn_AddExtension.Name = "btn_AddExtension";
-            this.btn_AddExtension.Size = new System.Drawing.Size(90, 32);
+            this.btn_AddExtension.Size = new System.Drawing.Size(112, 32);
             this.btn_AddExtension.TabIndex = 5;
             this.btn_AddExtension.Text = "Add Extension";
             this.btn_AddExtension.UseVisualStyleBackColor = true;
@@ -106,7 +108,7 @@
             // 
             // txtbox_Name
             // 
-            this.txtbox_Name.Location = new System.Drawing.Point(55, 379);
+            this.txtbox_Name.Location = new System.Drawing.Point(55, 404);
             this.txtbox_Name.Name = "txtbox_Name";
             this.txtbox_Name.Size = new System.Drawing.Size(228, 20);
             this.txtbox_Name.TabIndex = 6;
@@ -114,7 +116,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 382);
+            this.label1.Location = new System.Drawing.Point(14, 407);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 7;
@@ -123,7 +125,7 @@
             // lbl_testing
             // 
             this.lbl_testing.AutoSize = true;
-            this.lbl_testing.Location = new System.Drawing.Point(46, 433);
+            this.lbl_testing.Location = new System.Drawing.Point(46, 458);
             this.lbl_testing.Name = "lbl_testing";
             this.lbl_testing.Size = new System.Drawing.Size(35, 13);
             this.lbl_testing.TabIndex = 8;
@@ -151,11 +153,33 @@
             this.btn_UndoSort.UseVisualStyleBackColor = true;
             this.btn_UndoSort.Click += new System.EventHandler(this.btn_UndoSort_Click);
             // 
+            // btn_RemoveFolder
+            // 
+            this.btn_RemoveFolder.Location = new System.Drawing.Point(12, 356);
+            this.btn_RemoveFolder.Name = "btn_RemoveFolder";
+            this.btn_RemoveFolder.Size = new System.Drawing.Size(110, 32);
+            this.btn_RemoveFolder.TabIndex = 11;
+            this.btn_RemoveFolder.Text = "Remove Folder";
+            this.btn_RemoveFolder.UseVisualStyleBackColor = true;
+            this.btn_RemoveFolder.Click += new System.EventHandler(this.btn_RemoveFolder_Click);
+            // 
+            // btn_RemoveExtension
+            // 
+            this.btn_RemoveExtension.Location = new System.Drawing.Point(276, 356);
+            this.btn_RemoveExtension.Name = "btn_RemoveExtension";
+            this.btn_RemoveExtension.Size = new System.Drawing.Size(112, 32);
+            this.btn_RemoveExtension.TabIndex = 12;
+            this.btn_RemoveExtension.Text = "Remove Extension";
+            this.btn_RemoveExtension.UseVisualStyleBackColor = true;
+            this.btn_RemoveExtension.Click += new System.EventHandler(this.btn_RemoveExtension_Click);
+            // 
             // Sorter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 561);
+            this.Controls.Add(this.btn_RemoveExtension);
+            this.Controls.Add(this.btn_RemoveFolder);
             this.Controls.Add(this.btn_UndoSort);
             this.Controls.Add(this.chckbox_allExtensions);
             this.Controls.Add(this.lbl_testing);
@@ -189,6 +213,8 @@
         private System.Windows.Forms.Label lbl_testing;
         private System.Windows.Forms.CheckBox chckbox_allExtensions;
         private System.Windows.Forms.Button btn_UndoSort;
+        private System.Windows.Forms.Button btn_RemoveFolder;
+        private System.Windows.Forms.Button btn_RemoveExtension;
     }
 }
 

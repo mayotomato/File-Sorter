@@ -135,6 +135,7 @@ namespace File_Sorter_Beta
         private void removeExtension()
         {
             Extension.Extensions.Remove(selectedExtension);
+            selectedFolder.Extensions.Remove(selectedExtension);
             chcklistbox_Extensions_Reload();
         }
 
@@ -347,6 +348,18 @@ namespace File_Sorter_Beta
             undo_sortinto_directories();
 
             MessageBox.Show($"Undo Successful\nMoved {sortedCount} files");
+        }
+
+        //Button triggering remove folder
+        private void btn_RemoveFolder_Click(object sender, EventArgs e)
+        {
+            removeFolder();
+        }
+
+        //Button triggering remove extension
+        private void btn_RemoveExtension_Click(object sender, EventArgs e)
+        {
+            removeExtension();
         }
     }
 }
