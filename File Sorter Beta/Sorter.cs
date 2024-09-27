@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -121,6 +122,13 @@ namespace File_Sorter_Beta
             selectedPreset = Preset.Presets.FirstOrDefault(p => p.Name == selectedItem);
             chcklistbox_Folders_Reload();
             chcklistbox_Extensions_Reload();
+            chckbox_allExtensions_Reload();
+
+            //Selecting the first folder directory name when the preset is changed
+            if (chcklistbox_Folders.Items.Count != 0)
+            {
+                chcklistbox_Folders.SelectedIndex = 0;
+            }
         }
 
 
@@ -130,15 +138,21 @@ namespace File_Sorter_Beta
             if (chcklistbox_Folders != null)
             {
                 selectedFolderIndex = chcklistbox_Folders.SelectedIndex;
-                if (selectedFolderIndex != -1) 
+                if (selectedFolderIndex != -1 && selectedPreset.Folders.Count != 0) 
                 {
+                    //MessageBox.Show(selectedFolderIndex.ToString());
                     selectedFolder = selectedPreset.Folders[selectedFolderIndex];
                     chckbox_allExtensions.Checked = false;
                     chcklistbox_Extensions_Reload();
                     chcklistbox_Extensions.Enabled = selectedFolder.IsSorting;
                     chckbox_allExtensions_Reload();
+
+                    return;
                 }
-                
+
+                allExtensionsSelected = false;
+                chckbox_allExtensions_Reload();
+                return;
             }
         }
 
@@ -150,7 +164,8 @@ namespace File_Sorter_Beta
 
         private void chcklistbox_Folders_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (selectedFolderIndex != 1)
+            //selected folder index is set when selected index is changed so no need to check it here
+            if (selectedFolderIndex != -1)
             {
                 chcklistbox_Extensions.Enabled = selectedFolder.IsSorting;
             }
@@ -158,6 +173,11 @@ namespace File_Sorter_Beta
 
         private void chcklistbox_Folders_Reload()
         {
+            //selectedFolderIndex is not chosen if the the check list box is empty
+            if (chcklistbox_Folders.Items.Count != 0) 
+            {
+                chcklistbox_Folders.SelectedIndex = selectedFolderIndex;
+            }
             chcklistbox_Folders.Items.Clear();
             chcklistbox_Folders.ClearSelected();
             Folder[] folders = selectedPreset.Folders.ToArray();
@@ -166,6 +186,7 @@ namespace File_Sorter_Beta
             {
                 int index = chcklistbox_Folders.Items.Add(folder.Name);
                 chcklistbox_Folders.SetItemChecked(index, folder.IsSorting);
+                //MessageBox.Show($"{folder.Name} {folder.IsSorting.ToString()}");
             }
         }
 
@@ -182,14 +203,25 @@ namespace File_Sorter_Beta
             selectedPreset.Folders.Add(folder);
             selectedFolder = folder;
 
-            chcklistbox_Folders_Reload();
-            chcklistbox_Extensions.Enabled = false;
+            chcklistbox_Folders.Items.Add(folder_name);
+            chcklistbox_Folders.SelectedItem = folder_name;
+
         }
 
         private void removeFolder()
         {
+            int tempIndex = selectedFolderIndex;
             Folder.Folders.Remove(selectedFolder);
-            chcklistbox_Folders_Reload();
+            selectedPreset.Folders.Remove(selectedFolder);
+
+            chcklistbox_Folders.Items.Remove(selectedFolder.Name);
+            chcklistbox_Folders.SelectedIndex = tempIndex-1;
+
+            if (chcklistbox_Folders.Items.Count == 0)
+            {
+                chcklistbox_Extensions.Items.Clear();
+                chckbox_allExtensions.Checked = false;
+            }
         }
 
 
@@ -228,6 +260,8 @@ namespace File_Sorter_Beta
         {
             /*Reloading all extension objects from selected folder and displaying it on
             chcklistbox_Extensions*/
+            if (selectedFolder == null) { chcklistbox_Extensions.Items.Clear(); chcklistbox_Extensions.Enabled = false; return; }
+
             Folder[] folders = selectedPreset.Folders.ToArray();
 
             if (folders.Length == 0)
@@ -304,8 +338,12 @@ namespace File_Sorter_Beta
 
         private void chckbox_allExtensions_Reload()
         {
+            if (chcklistbox_Extensions.Items.Count == 0)
+            {
+                chckbox_allExtensions.Checked = false;
+                return;
+            }
             chckbox_allExtensions.Checked = allExtensionsSelected;
-
         }
 
         private void chckbox_allExtensions_MouseClick(object sender, MouseEventArgs e)
