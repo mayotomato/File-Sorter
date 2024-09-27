@@ -68,6 +68,7 @@
             this.chcklistbox_Extensions.TabIndex = 1;
             this.chcklistbox_Extensions.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chcklistbox_Extensions_ItemCheck);
             this.chcklistbox_Extensions.SelectedIndexChanged += new System.EventHandler(this.chcklistbox_Extensions_SelectedIndexChanged);
+            this.chcklistbox_Extensions.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chcklistbox_Extensions_MouseDoubleClick);
             // 
             // btn_sort
             // 

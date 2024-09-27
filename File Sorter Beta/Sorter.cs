@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -44,7 +45,7 @@ namespace File_Sorter_Beta
             chcklistbox_Extensions.Items.Clear();
             chcklistbox_Folders.Items.Clear();
             create_default_preset();
-
+            chckbox_allExtensions_Reload();
         }
 
         private void Sorter_Load(object sender, EventArgs e)
@@ -79,7 +80,7 @@ namespace File_Sorter_Beta
 
             //Setting up the selected preset, folder, and extension
             selectedPreset = defaultPreset;
-            selectedFolder = Folder.getFolders()[0];
+            selectedFolder = selectedPreset.Folders[0];
             selectedExtension = Extension.getExtensions()[0];
 
             //Forms stuff
@@ -131,7 +132,7 @@ namespace File_Sorter_Beta
                 selectedFolderIndex = chcklistbox_Folders.SelectedIndex;
                 if (selectedFolderIndex != -1) 
                 {
-                    selectedFolder = Folder.getFolders()[selectedFolderIndex];
+                    selectedFolder = selectedPreset.Folders[selectedFolderIndex];
                     chckbox_allExtensions.Checked = false;
                     chcklistbox_Extensions_Reload();
                     chcklistbox_Extensions.Enabled = selectedFolder.IsSorting;
@@ -171,8 +172,18 @@ namespace File_Sorter_Beta
         private void addNewFolder()
         {
             string folder_name = txtbox_Name.Text;
+            folder_name = folder_name.Trim();
+            if (string.IsNullOrEmpty(folder_name) || (Regex.IsMatch(folder_name, @" +$")))
+            {
+                return;
+            }
+
             Folder folder = new Folder(folder_name);
+            selectedPreset.Folders.Add(folder);
+            selectedFolder = folder;
+
             chcklistbox_Folders_Reload();
+            chcklistbox_Extensions.Enabled = false;
         }
 
         private void removeFolder()
@@ -203,21 +214,14 @@ namespace File_Sorter_Beta
         {
             allExtensionsSelected = (chcklistbox_Extensions.Items.Count == chcklistbox_Extensions.CheckedItems.Count);
             chckbox_allExtensions_Reload();
+            lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()} {allExtensionsSelected}";
         }
 
-        private void addNewExtension()
+        private void chcklistbox_Extensions_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            string extension_format = txtbox_Name.Text;
-            Extension extension = new Extension(extension_format);
-            selectedFolder.Extensions.Add(extension);
-            chcklistbox_Extensions_Reload();
-        }
-
-        private void removeExtension()
-        {
-            Extension.Extensions.Remove(selectedExtension);
-            selectedFolder.Extensions.Remove(selectedExtension);
-            chcklistbox_Extensions_Reload();
+            allExtensionsSelected = (chcklistbox_Extensions.Items.Count == chcklistbox_Extensions.CheckedItems.Count);
+            chckbox_allExtensions_Reload();
+            lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()} {allExtensionsSelected}";
         }
 
         private void chcklistbox_Extensions_Reload()
@@ -229,11 +233,16 @@ namespace File_Sorter_Beta
             if (folders.Length == 0)
             {
                 chcklistbox_Extensions.Items.Clear();
+                return;
             }
             else
             {
                 chcklistbox_Extensions.Items.Clear();
                 Extension[] extensions = selectedFolder.getExtensions();
+                if (extensions.Length == 0)
+                {
+                    return;
+                }
                 int allSortedChecker = 1;
                 foreach (Extension extension in extensions)
                 {
@@ -241,9 +250,12 @@ namespace File_Sorter_Beta
                     chcklistbox_Extensions.SetItemChecked(index, extension.IsSorting);
                     allSortedChecker *= extension.IsSorting ? 1 : 0;
                 }
+
                 //Checking if all items in the check list box are selected
                 allExtensionsSelected = (allSortedChecker == 1);
             }
+
+
         }
 
         private void chcklistbox_Extensions_SelectAll()
@@ -266,6 +278,26 @@ namespace File_Sorter_Beta
             chcklistbox_Extensions_Reload();
         }
 
+        private void addNewExtension()
+        {
+            string extension_format = txtbox_Name.Text;
+            extension_format = extension_format.Trim();
+
+            Extension extension = new Extension(extension_format);
+            selectedFolder.Extensions.Add(extension);
+
+            chcklistbox_Extensions_Reload();
+            chckbox_allExtensions_Reload();
+        }
+
+        private void removeExtension()
+        {
+            Extension.Extensions.Remove(selectedExtension);
+            selectedFolder.Extensions.Remove(selectedExtension);
+
+            chcklistbox_Extensions_Reload();
+            chckbox_allExtensions_Reload();
+        }
 
         //-----------------------------------------------Select All Button-----------------------------------------------
         //IloveMahin
@@ -422,5 +454,7 @@ namespace File_Sorter_Beta
         {
             removeExtension();
         }
+
+
     }
 }
