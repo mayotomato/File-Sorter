@@ -6,7 +6,9 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -30,7 +32,6 @@ namespace File_Sorter_Beta
         private int selectedExtensionIndex;
 
         //Select all button
-        private bool allExtensionsSelected;
         private bool pathContainsAllDirectories;
 
         //Tracking number of files sorted during sort
@@ -44,7 +45,7 @@ namespace File_Sorter_Beta
             chcklistbox_Extensions.Items.Clear();
             chcklistbox_Folders.Items.Clear();
             create_default_preset();
-
+            chckbox_allExtensions_Reload();
         }
 
         private void Sorter_Load(object sender, EventArgs e)
@@ -79,7 +80,7 @@ namespace File_Sorter_Beta
 
             //Setting up the selected preset, folder, and extension
             selectedPreset = defaultPreset;
-            selectedFolder = Folder.getFolders()[0];
+            selectedFolder = selectedPreset.Folders[0];
             selectedExtension = Extension.getExtensions()[0];
 
             //Forms stuff
@@ -120,6 +121,13 @@ namespace File_Sorter_Beta
             selectedPreset = Preset.Presets.FirstOrDefault(p => p.Name == selectedItem);
             chcklistbox_Folders_Reload();
             chcklistbox_Extensions_Reload();
+            chckbox_allExtensions_Reload();
+
+            //Selecting the first folder directory name when the preset is changed
+            if (chcklistbox_Folders.Items.Count != 0)
+            {
+                chcklistbox_Folders.SelectedIndex = 0;
+            }
         }
 
 
@@ -129,15 +137,19 @@ namespace File_Sorter_Beta
             if (chcklistbox_Folders != null)
             {
                 selectedFolderIndex = chcklistbox_Folders.SelectedIndex;
-                if (selectedFolderIndex != -1) 
+                if (selectedFolderIndex != -1 && selectedPreset.Folders.Count != 0) 
                 {
-                    selectedFolder = Folder.getFolders()[selectedFolderIndex];
+                    //MessageBox.Show(selectedFolderIndex.ToString());
+                    selectedFolder = selectedPreset.Folders[selectedFolderIndex];
                     chckbox_allExtensions.Checked = false;
                     chcklistbox_Extensions_Reload();
                     chcklistbox_Extensions.Enabled = selectedFolder.IsSorting;
                     chckbox_allExtensions_Reload();
+
+                    return;
                 }
-                
+                chckbox_allExtensions_Reload();
+                return;
             }
         }
 
@@ -149,7 +161,8 @@ namespace File_Sorter_Beta
 
         private void chcklistbox_Folders_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (selectedFolderIndex != 1)
+            //selected folder index is set when selected index is changed so no need to check it here
+            if (selectedFolderIndex != -1)
             {
                 chcklistbox_Extensions.Enabled = selectedFolder.IsSorting;
             }
@@ -157,6 +170,11 @@ namespace File_Sorter_Beta
 
         private void chcklistbox_Folders_Reload()
         {
+            //selectedFolderIndex is not chosen if the the check list box is empty
+            if (chcklistbox_Folders.Items.Count != 0) 
+            {
+                chcklistbox_Folders.SelectedIndex = selectedFolderIndex;
+            }
             chcklistbox_Folders.Items.Clear();
             chcklistbox_Folders.ClearSelected();
             Folder[] folders = selectedPreset.Folders.ToArray();
@@ -165,28 +183,53 @@ namespace File_Sorter_Beta
             {
                 int index = chcklistbox_Folders.Items.Add(folder.Name);
                 chcklistbox_Folders.SetItemChecked(index, folder.IsSorting);
+                //MessageBox.Show($"{folder.Name} {folder.IsSorting.ToString()}");
             }
         }
 
+        //Adding new folder
         private void addNewFolder()
         {
             string folder_name = txtbox_Name.Text;
+            folder_name = folder_name.Trim();
+            if (string.IsNullOrEmpty(folder_name) || (Regex.IsMatch(folder_name, @" +$")))
+            {
+                return;
+            }
+
             Folder folder = new Folder(folder_name);
-            chcklistbox_Folders_Reload();
+            selectedPreset.Folders.Add(folder);
+            selectedFolder = folder;
+
+            chcklistbox_Folders.Items.Add(folder_name);
+            chcklistbox_Folders.SelectedItem = folder_name;
+
         }
 
+        //Removing a folder
         private void removeFolder()
         {
+            int tempIndex = selectedFolderIndex;
             Folder.Folders.Remove(selectedFolder);
-            chcklistbox_Folders_Reload();
+            selectedPreset.Folders.Remove(selectedFolder);
+
+            chcklistbox_Folders.Items.Remove(selectedFolder.Name);
+            chcklistbox_Folders.SelectedIndex = tempIndex-1;
+
+            if (chcklistbox_Folders.Items.Count == 0)
+            {
+                chcklistbox_Extensions.Items.Clear();
+                chckbox_allExtensions.Checked = false;
+            }
         }
 
 
         //-----------------------------------------------Extensions-----------------------------------------------
 
+        //On item check event
         private void chcklistbox_Extensions_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            selectedExtensionIndex = e.Index;
+            selectedExtensionIndex = chcklistbox_Extensions.SelectedIndex;
             if (selectedExtensionIndex >= 0 && selectedExtensionIndex < chcklistbox_Extensions.Items.Count)
             {
                 selectedExtension = selectedFolder.getExtensions()[selectedExtensionIndex];
@@ -194,88 +237,139 @@ namespace File_Sorter_Beta
                 selectedExtension.IsSorting = !selectedExtension.IsSorting;
                 selectedExtension.IsSorting = selectedItemisChecked;
 
-                lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()} {allExtensionsSelected}";
+                lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()}";
             }
             
         }
 
+        //On selected item change
         private void chcklistbox_Extensions_SelectedIndexChanged(object sender, EventArgs e)
         {
-            allExtensionsSelected = (chcklistbox_Extensions.Items.Count == chcklistbox_Extensions.CheckedItems.Count);
+            if (chcklistbox_Extensions.SelectedIndex != -1)
+            {
+                selectedExtensionIndex = chcklistbox_Extensions.SelectedIndex;
+                selectedExtension = selectedFolder.getExtensions()[selectedExtensionIndex];
+
+                chckbox_allExtensions_Reload();
+                lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()}";
+
+            }
+        }
+
+        //Double click handling
+        private void chcklistbox_Extensions_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
             chckbox_allExtensions_Reload();
+            lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()}";
         }
 
-        private void addNewExtension()
-        {
-            string extension_format = txtbox_Name.Text;
-            Extension extension = new Extension(extension_format);
-            selectedFolder.Extensions.Add(extension);
-            chcklistbox_Extensions_Reload();
-        }
-
-        private void removeExtension()
-        {
-            Extension.Extensions.Remove(selectedExtension);
-            selectedFolder.Extensions.Remove(selectedExtension);
-            chcklistbox_Extensions_Reload();
-        }
-
+        //Reloading extensions check list box
         private void chcklistbox_Extensions_Reload()
         {
             /*Reloading all extension objects from selected folder and displaying it on
             chcklistbox_Extensions*/
+            if (selectedFolder == null) { chcklistbox_Extensions.Items.Clear(); chcklistbox_Extensions.Enabled = false; return; }
+
             Folder[] folders = selectedPreset.Folders.ToArray();
 
             if (folders.Length == 0)
             {
                 chcklistbox_Extensions.Items.Clear();
+                return;
             }
             else
             {
                 chcklistbox_Extensions.Items.Clear();
                 Extension[] extensions = selectedFolder.getExtensions();
-                int allSortedChecker = 1;
+                if (extensions.Length == 0)
+                {
+                    return;
+                }
                 foreach (Extension extension in extensions)
                 {
                     int index = chcklistbox_Extensions.Items.Add(extension.Format);
                     chcklistbox_Extensions.SetItemChecked(index, extension.IsSorting);
-                    allSortedChecker *= extension.IsSorting ? 1 : 0;
                 }
+
                 //Checking if all items in the check list box are selected
-                allExtensionsSelected = (allSortedChecker == 1);
+                chckbox_allExtensions_Reload();
             }
+
+
         }
 
+        //Adding new extension
+        private void addNewExtension()
+        {
+            string extension_format = txtbox_Name.Text;
+            extension_format = extension_format.Trim();
+
+            Extension extension = new Extension(extension_format);
+            selectedFolder.Extensions.Add(extension);
+
+            chcklistbox_Extensions.Items.Add(extension_format);
+            chckbox_allExtensions_Reload();
+        }
+
+        //Removing extension
+        private void removeExtension()
+        {
+            int tempIndex = selectedExtensionIndex;
+
+            Extension.Extensions.Remove(selectedExtension);
+            selectedFolder.Extensions.Remove(selectedExtension);
+
+            chcklistbox_Extensions.Items.Remove(selectedExtension.Format);
+            chcklistbox_Extensions.SelectedIndex = tempIndex - 1;
+
+            if (tempIndex <= 0)
+            {
+                chckbox_allExtensions.Checked = false;
+            }
+            chckbox_allExtensions_Reload();
+        }
+
+        //-----------------------------------------------Select All Extensions Button-----------------------------------------------
+        //IloveMahin
+
+        //Selecting all extensions
         private void chcklistbox_Extensions_SelectAll()
         {
             foreach (Extension extension in selectedFolder.getExtensions())
             {
                 extension.IsSorting = true;
             }
-            allExtensionsSelected = true;
             chcklistbox_Extensions_Reload();
         }
 
+        //Deselecting all extensions
         private void chcklistbox_Extensions_DeselectAll()
         {
             foreach (Extension extension in selectedFolder.getExtensions())
             {
                 extension.IsSorting = false;
             }
-            allExtensionsSelected = false;
             chcklistbox_Extensions_Reload();
         }
 
-
-        //-----------------------------------------------Select All Button-----------------------------------------------
-        //IloveMahin
-
+        //Reloading the button in the UI
         private void chckbox_allExtensions_Reload()
         {
-            chckbox_allExtensions.Checked = allExtensionsSelected;
+            if (chcklistbox_Extensions.Items.Count == 0 ||
+                chcklistbox_Extensions.Items.Count != chcklistbox_Extensions.CheckedItems.Count)
+            {
+                chckbox_allExtensions.Checked = false;
+                return;
+            }
+            else
+            {
+                chckbox_allExtensions.Checked = true;
+                return;
+            }
 
         }
 
+        //Handling both item check and unchecking
         private void chckbox_allExtensions_MouseClick(object sender, MouseEventArgs e)
         {
             if (chckbox_allExtensions.Checked)
@@ -422,5 +516,7 @@ namespace File_Sorter_Beta
         {
             removeExtension();
         }
+
+
     }
 }

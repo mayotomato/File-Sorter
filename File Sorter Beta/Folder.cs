@@ -124,6 +124,11 @@ namespace File_Sorter_Beta
             return this.extensions.ToArray();
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
         //Default folders extensions
         public static Dictionary<string, string[]> getDefaultExtensions()
         {

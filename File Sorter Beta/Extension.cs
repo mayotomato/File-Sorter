@@ -72,6 +72,7 @@ namespace File_Sorter_Beta
 
         private bool IsValidFormat(string format)
         {
+            if (Regex.IsMatch(format, @" ")) { return false; }
             return Regex.IsMatch(format, @"\.[a-zA-z0-9]{2,4}");
         }
 

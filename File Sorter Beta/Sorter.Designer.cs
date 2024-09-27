@@ -44,6 +44,7 @@
             this.cmbobox_Preset = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,6 +69,7 @@
             this.chcklistbox_Extensions.TabIndex = 1;
             this.chcklistbox_Extensions.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.chcklistbox_Extensions_ItemCheck);
             this.chcklistbox_Extensions.SelectedIndexChanged += new System.EventHandler(this.chcklistbox_Extensions_SelectedIndexChanged);
+            this.chcklistbox_Extensions.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chcklistbox_Extensions_MouseDoubleClick);
             // 
             // btn_sort
             // 
@@ -205,11 +207,21 @@
             this.groupBox1.TabIndex = 16;
             this.groupBox1.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(273, 479);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "label2";
+            // 
             // Sorter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(534, 561);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_RemoveExtension);
             this.Controls.Add(this.btn_RemoveFolder);
@@ -254,6 +266,7 @@
         private System.Windows.Forms.ComboBox cmbobox_Preset;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label3;
     }
 }
 
