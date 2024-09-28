@@ -51,6 +51,9 @@ namespace File_Sorter_Beta
         private void Sorter_Load(object sender, EventArgs e)
         {
             cmbobox_Preset.Items.Add("Add Item");
+
+            //chcklistbox_Folders.DrawMode = DrawMode.OwnerDrawFixed;
+            //chcklistbox_Folders.DrawItem += chcklistbox_Folders_DrawItem;
         }
 
 
@@ -132,6 +135,23 @@ namespace File_Sorter_Beta
 
 
         //-----------------------------------------------Folders-----------------------------------------------
+
+        //private void chcklistbox_Folders_DrawItem(object sender, DrawItemEventArgs e)
+        //{
+        //    e.DrawBackground();
+        //    Graphics g = e.Graphics;
+
+        //    g.FillRectangle(new SolidBrush(Color.Silver), e.Bounds);
+
+        //    g.DrawString(Text, e.Font, new SolidBrush(Color.White), e.Bounds);
+
+        //    e.DrawFocusRectangle();
+        //    if (e.Index == 1) // Assuming "Add Item" is at index 2
+        //    {
+        //        e.Graphics.DrawString(chcklistbox_Folders.Items[e.Index].ToString(), e.Font, Brushes.Black, e.Bounds);
+        //    }
+        //}
+        
         private void chcklistbox_Folders_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (chcklistbox_Folders != null)
@@ -186,6 +206,8 @@ namespace File_Sorter_Beta
                 //MessageBox.Show($"{folder.Name} {folder.IsSorting.ToString()}");
             }
         }
+
+
 
         //Adding new folder
         private void addNewFolder()
@@ -412,7 +434,7 @@ namespace File_Sorter_Beta
                 foreach (string filePath in filePaths)
                 {
                     string fileName = Path.GetFileName(filePath);
-                    string fileExtension = Path.GetExtension(filePath);
+                    string fileExtension = Path.GetExtension(filePath).ToLower();
                     if (folder.ExtensionFormats.Contains(fileExtension)) 
                     {
                         string destinationPath = $@"{selectedPath}\{folder.Name}\{fileName}";
@@ -440,13 +462,16 @@ namespace File_Sorter_Beta
                 File.Move(recentFileSorted.Key, recentFileSorted.Value);
             }
 
-            //Delete the new directories
+            //Delete the new directories if they are new directories or empty
             foreach (string directory in directories)
             {
                 string path = $@"{selectedPath}\{directory}";
-                Directory.Delete(path);
+                int pathFileCount = Directory.EnumerateFiles(path).Count();
+                if (pathFileCount < 1)
+                {
+                    Directory.Delete(path);
+                }
             }
-            
         }
 
 
