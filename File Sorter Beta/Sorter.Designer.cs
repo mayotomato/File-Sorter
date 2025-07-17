@@ -133,9 +133,8 @@
             this.lbl_testing.AutoSize = true;
             this.lbl_testing.Location = new System.Drawing.Point(273, 452);
             this.lbl_testing.Name = "lbl_testing";
-            this.lbl_testing.Size = new System.Drawing.Size(35, 13);
+            this.lbl_testing.Size = new System.Drawing.Size(0, 13);
             this.lbl_testing.TabIndex = 8;
-            this.lbl_testing.Text = "label2";
             // 
             // chckbox_allExtensions
             // 
@@ -214,7 +213,8 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 17;
-            this.label3.Text = "label2";
+            //this.label3.Text = "label2";
+            //this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // Sorter
             // 

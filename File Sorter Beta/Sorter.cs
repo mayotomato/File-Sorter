@@ -435,14 +435,34 @@ namespace File_Sorter_Beta
                 {
                     string fileName = Path.GetFileName(filePath);
                     string fileExtension = Path.GetExtension(filePath).ToLower();
-                    if (folder.ExtensionFormats.Contains(fileExtension)) 
+
+                    if (folder.ExtensionFormats.Contains(fileExtension))
                     {
                         string destinationPath = $@"{selectedPath}\{folder.Name}\{fileName}";
-                        File.Move(filePath, destinationPath);
-                        recentFilesSorted.Add(destinationPath, filePath);
-                        sortedCount++;
+
+                        try
+                        {
+                            if (File.Exists(destinationPath))
+                            {
+                                Console.WriteLine($"Skipped: {destinationPath} already exists.");
+                                continue; // Skip to the next file
+                            }
+
+                            File.Move(filePath, destinationPath);
+                            recentFilesSorted.Add(destinationPath, filePath);
+                            sortedCount++;
+                        }
+                        catch (IOException ioEx)
+                        {
+                            Console.WriteLine($"IO error while moving file '{filePath}': {ioEx.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Unexpected error while moving file '{filePath}': {ex.Message}");
+                        }
                     }
                 }
+
             });
 
             return sortedCount;
@@ -541,7 +561,6 @@ namespace File_Sorter_Beta
         {
             removeExtension();
         }
-
 
     }
 }
