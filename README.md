@@ -3,7 +3,7 @@
 **File Sorter** is a C# Windows Forms application that automatically organizes files into folders based on their extensions.  
 It supports presets, custom folder/extension configurations, batch selection, and an undo function to restore files to their original locations.  
 
-<img width="1057" height="1161" alt="image" src="https://github.com/user-attachments/assets/3c6eab2f-0a37-4a5b-b5a2-aaed6c2fc90f" />
+<img width="550" height="600" alt="image" src="https://github.com/user-attachments/assets/3c6eab2f-0a37-4a5b-b5a2-aaed6c2fc90f" />
 
 ## Installation
 
