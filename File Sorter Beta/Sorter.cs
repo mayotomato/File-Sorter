@@ -24,7 +24,7 @@ namespace File_Sorter_Beta
         private Extension selectedExtension;
 
         //Sorting and undoing related
-        private string selectedPath;
+        private string selectedPath = "-";
         private Dictionary<string, string> recentFilesSorted;
 
         //Calculation or UI Related
@@ -50,7 +50,8 @@ namespace File_Sorter_Beta
 
         private void Sorter_Load(object sender, EventArgs e)
         {
-            cmbobox_Preset.Items.Add("Add Item");
+            cmbobox_Preset.Items.Add("Add Preset");
+            lbl_path.Text = selectedPath;
 
             //chcklistbox_Folders.DrawMode = DrawMode.OwnerDrawFixed;
             //chcklistbox_Folders.DrawItem += chcklistbox_Folders_DrawItem;
@@ -102,7 +103,7 @@ namespace File_Sorter_Beta
         private void cmbobox_Preset_SelectedIndexChanged(object sender, EventArgs e)
         {
             var selectedItem = cmbobox_Preset.SelectedItem as string;
-            if (selectedItem != null && selectedItem == "Add Item")
+            if (selectedItem != null && selectedItem == "Add Preset")
             {
                 NewPreset menu = new NewPreset();
                 menu.ShowDialog();
@@ -321,16 +322,19 @@ namespace File_Sorter_Beta
         }
 
         //Adding new extension
-        private void addNewExtension()
+        private void addNewExtension(string extension_format)
         {
-            string extension_format = txtbox_Name.Text;
-            extension_format = extension_format.Trim();
+            
+            if (!extension_format.StartsWith("."))
+            {
+                extension_format = "." + extension_format;
+                Extension extension = new Extension(extension_format);
+                selectedFolder.Extensions.Add(extension);
 
-            Extension extension = new Extension(extension_format);
-            selectedFolder.Extensions.Add(extension);
-
-            chcklistbox_Extensions.Items.Add(extension_format);
-            chckbox_allExtensions_Reload();
+                chcklistbox_Extensions.Items.Add(extension_format);
+                chckbox_allExtensions_Reload();
+            }
+            
         }
 
         //Removing extension
@@ -480,13 +484,25 @@ namespace File_Sorter_Beta
         //Adding new folder button
         private void btn_AddFolder_Click(object sender, EventArgs e)
         {
+            string folder_name = txtbox_Name.Text.Trim();
+            if (string.IsNullOrEmpty(folder_name))
+            {
+                MessageBox.Show("Please enter a valid folder name", "Invalid Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             addNewFolder();
         }
 
         //Adding new extension button
         private void btn_AddExtension_Click(object sender, EventArgs e)
         {
-            addNewExtension();
+            string extension_format = txtbox_extension.Text.Trim();
+            if (string.IsNullOrEmpty(extension_format))
+            {
+                MessageBox.Show("Please enter a valid extension format", "Invalid Format", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            addNewExtension(extension_format);
         }
 
         //Selecting folder with use of FileBrowserDialog
@@ -495,32 +511,16 @@ namespace File_Sorter_Beta
             using (FolderBrowserDialog fbd = new FolderBrowserDialog())
             {
                 fbd.Description = "Select a main folder to sort files in.";
-                if (fbd.ShowDialog() == DialogResult.OK)
+                if (fbd.ShowDialog(this) == DialogResult.OK)
                 {
                     selectedPath = fbd.SelectedPath;
                     pathContainsAllDirectories = false;
                     btn_sort.Enabled = true;
+                    lbl_path.Text = selectedPath;
                 }
             }
         }
 
-        //Sorting button executing sorting methods
-        private void btn_sort_Click(object sender, EventArgs e)
-        {
-            sortedCount = 0;
-            if (pathContainsAllDirectories)
-            {
-                sortedCount = sortinto_directories();
-            }
-            else
-            {
-                create_directories();
-                sortedCount = sortinto_directories();
-            }
-            btn_UndoSort.Visible = true;
-
-            MessageBox.Show($"Sort Successful\nMoved {sortedCount} files");
-        }
 
         //Button to trigger undo sort method
         private void btn_UndoSort_Click(object sender, EventArgs e)
@@ -542,6 +542,27 @@ namespace File_Sorter_Beta
             removeExtension();
         }
 
+        //Sorting button executing sorting methods
+        private void btn_sort_Click(object sender, EventArgs e)
+        {
+            if (selectedPath == "-" || selectedPath == null)
+            {
+                MessageBox.Show("Please select a valid path", "Invalid Path", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            sortedCount = 0;
+            if (pathContainsAllDirectories)
+            {
+                sortedCount = sortinto_directories();
+            }
+            else
+            {
+                create_directories();
+                sortedCount = sortinto_directories();
+            }
+            btn_UndoSort.Visible = true;
 
+            MessageBox.Show($"Sort Successful\nMoved {sortedCount} files");
+        }
     }
 }
