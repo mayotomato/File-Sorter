@@ -30,8 +30,3 @@ It supports presets, custom folder/extension configurations, batch selection, an
 - **Parallelized sorting** for faster performance.  
 - **Undo functionality** to restore files to their original locations.  
 
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss your ideas.  
-
-Please ensure that new features are tested and documented.  
