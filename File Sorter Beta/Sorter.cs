@@ -52,17 +52,23 @@ namespace File_Sorter_Beta
         {
             cmbobox_Preset.Items.Add("Add Preset");
             lbl_path.Text = selectedPath;
+            Preset.LoadOrCreatePresets();
 
             //chcklistbox_Folders.DrawMode = DrawMode.OwnerDrawFixed;
             //chcklistbox_Folders.DrawItem += chcklistbox_Folders_DrawItem;
+        }
+
+        private void Sorter_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Preset.SavePresets();
         }
 
 
         //-----------------------------------------------Creating Default Preset-----------------------------------------------
         private void create_default_preset()
         {
-            Dictionary<string, bool> defaultFolders = Preset.getDefaultFolders();
-            Dictionary<string, string[]> defaultFoldersToExtensions = Folder.getDefaultExtensions();
+            Dictionary<string, bool> defaultFolders = Preset.GetDefaultFolders();
+            Dictionary<string, string[]> defaultFoldersToExtensions = Folder.GetDefaultExtensions();
             List<Folder> folders = new List<Folder>();
 
             foreach (var defaultFolder in defaultFolders)
@@ -109,6 +115,7 @@ namespace File_Sorter_Beta
                 menu.ShowDialog();
 
                 Preset newPreset = menu.getNewPreset;
+                if (newPreset == null) { return; }
                 int newIndex = cmbobox_Preset.Items.Count - 1;
 
                 cmbobox_Preset.Items.Insert(newIndex, newPreset.ToString());
@@ -255,7 +262,7 @@ namespace File_Sorter_Beta
             selectedExtensionIndex = chcklistbox_Extensions.SelectedIndex;
             if (selectedExtensionIndex >= 0 && selectedExtensionIndex < chcklistbox_Extensions.Items.Count)
             {
-                selectedExtension = selectedFolder.getExtensions()[selectedExtensionIndex];
+                selectedExtension = selectedFolder.GetExtensions()[selectedExtensionIndex];
                 bool selectedItemisChecked = !chcklistbox_Extensions.CheckedItems.Contains(chcklistbox_Extensions.Items[selectedExtensionIndex]);
                 selectedExtension.IsSorting = !selectedExtension.IsSorting;
                 selectedExtension.IsSorting = selectedItemisChecked;
@@ -271,7 +278,7 @@ namespace File_Sorter_Beta
             if (chcklistbox_Extensions.SelectedIndex != -1)
             {
                 selectedExtensionIndex = chcklistbox_Extensions.SelectedIndex;
-                selectedExtension = selectedFolder.getExtensions()[selectedExtensionIndex];
+                selectedExtension = selectedFolder.GetExtensions()[selectedExtensionIndex];
 
                 chckbox_allExtensions_Reload();
                 lbl_testing.Text = $"{selectedExtension.Format} {selectedExtension.IsSorting.ToString()}";
@@ -303,7 +310,7 @@ namespace File_Sorter_Beta
             else
             {
                 chcklistbox_Extensions.Items.Clear();
-                Extension[] extensions = selectedFolder.getExtensions();
+                Extension[] extensions = selectedFolder.GetExtensions();
                 if (extensions.Length == 0)
                 {
                     return;
@@ -361,7 +368,7 @@ namespace File_Sorter_Beta
         //Selecting all extensions
         private void chcklistbox_Extensions_SelectAll()
         {
-            foreach (Extension extension in selectedFolder.getExtensions())
+            foreach (Extension extension in selectedFolder.GetExtensions())
             {
                 extension.IsSorting = true;
             }
@@ -371,7 +378,7 @@ namespace File_Sorter_Beta
         //Deselecting all extensions
         private void chcklistbox_Extensions_DeselectAll()
         {
-            foreach (Extension extension in selectedFolder.getExtensions())
+            foreach (Extension extension in selectedFolder.GetExtensions())
             {
                 extension.IsSorting = false;
             }
@@ -428,23 +435,57 @@ namespace File_Sorter_Beta
 
         private int sortinto_directories()
         {
-            List<Folder> directories = Folder.Folders.Where(folder => folder.IsSorting).ToList();
-            string[] filePaths = Directory.GetFiles(selectedPath);
-            recentFilesSorted = new Dictionary<string, string>();
-            int sortedCount = 0;
+            // Get only folders marked for sorting
+            List<Folder> directories = Folder.Folders
+                .Where(folder => folder.IsSorting)
+                .ToList();
 
-            Parallel.ForEach(directories, (folder) => 
+            // Get all files in the selected path
+            string[] filePaths = Directory.GetFiles(selectedPath);
+
+            // Thread-safe dictionary for recent files
+            recentFilesSorted = new Dictionary<string, string>();
+
+            int sortedCount = 0;
+            object lockObj = new object(); // for thread safety
+
+            Parallel.ForEach(directories, folder =>
             {
                 foreach (string filePath in filePaths)
                 {
                     string fileName = Path.GetFileName(filePath);
                     string fileExtension = Path.GetExtension(filePath).ToLower();
-                    if (folder.ExtensionFormats.Contains(fileExtension)) 
+
+                    if (folder.ExtensionFormats.Contains(fileExtension))
                     {
-                        string destinationPath = $@"{selectedPath}\{folder.Name}\{fileName}";
-                        File.Move(filePath, destinationPath);
-                        recentFilesSorted.Add(destinationPath, filePath);
-                        sortedCount++;
+                        string destinationDir = Path.Combine(selectedPath, folder.Name);
+                        Directory.CreateDirectory(destinationDir); // ensure folder exists
+
+                        string destinationPath = Path.Combine(destinationDir, fileName);
+
+                        // If file exists, generate a unique name
+                        int counter = 1;
+                        while (File.Exists(destinationPath))
+                        {
+                            string nameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+                            string ext = Path.GetExtension(fileName);
+                            destinationPath = Path.Combine(destinationDir, $"{nameWithoutExt} ({counter++}){ext}");
+                        }
+
+                        try
+                        {
+                            File.Move(filePath, destinationPath);
+
+                            lock (lockObj)
+                            {
+                                recentFilesSorted[destinationPath] = filePath;
+                                sortedCount++;
+                            }
+                        }
+                        catch (IOException ex)
+                        {
+                            Console.WriteLine($"Error moving file {filePath}: {ex.Message}");
+                        }
                     }
                 }
             });
@@ -564,5 +605,7 @@ namespace File_Sorter_Beta
 
             MessageBox.Show($"Sort Successful\nMoved {sortedCount} files");
         }
+
+
     }
 }

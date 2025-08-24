@@ -285,6 +285,7 @@
             this.Name = "Sorter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "File Sorter";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Sorter_FormClosing);
             this.Load += new System.EventHandler(this.Sorter_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

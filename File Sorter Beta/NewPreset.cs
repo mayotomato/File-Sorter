@@ -28,7 +28,7 @@ namespace File_Sorter_Beta
             if (presetName == null || presetName == "")
             {
                 txtbox_PresetName.Clear();
-                MessageBox.Show("Please enter a valid name");
+                MessageBox.Show("Please enter a valid name", "Error");
             }
             else { Close(); }
         }

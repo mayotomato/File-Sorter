@@ -1,20 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using System.IO;
 
 namespace File_Sorter_Beta
 {
     internal class Preset
     {
-        //Backing fields
-        public string name;
-        public List<Folder> folders;
-        public static List<Preset> presets = new List<Preset>();
+        // Backing fields (private to avoid JSON duplication)
+        private string name;
+        private List<Folder> folders;
 
-        //Getters and setters
+        // Static list of all presets
+        private static List<Preset> presets = new List<Preset>();
+
+        // Properties
         public string Name
         {
             get => name;
@@ -24,52 +24,92 @@ namespace File_Sorter_Beta
         public List<Folder> Folders
         {
             get => folders;
-            set => folders = value;
+            set => folders = value ?? new List<Folder>();
         }
 
-        public static List<Preset> Presets
-        {
-            get => presets;
-        }
+        public static List<Preset> Presets => presets;
 
-        //Constructors
+        // Parameterless constructor for JSON.NET
+        public Preset() { }
+
         public Preset(string aName)
         {
-            this.Name = aName;
-            this.Folders = new List<Folder>();
-
+            Name = aName;
+            Folders = new List<Folder>();
             presets.Add(this);
         }
 
         public Preset(string aName, List<Folder> aFolders)
         {
-            this.Name = aName;
-            this.Folders = aFolders;
-
+            Name = aName;
+            Folders = aFolders ?? new List<Folder>();
             presets.Add(this);
         }
 
-        //Functions
-        public static Dictionary<string, bool> getDefaultFolders()
-        {
-            Dictionary<string, bool> defaultFolders = new Dictionary<string, bool>();
-            defaultFolders.Add("Compressed", true);
-            defaultFolders.Add("Database", false);
-            defaultFolders.Add("Documents", true);
-            defaultFolders.Add("Ebook", false);
-            defaultFolders.Add("Font", false);
-            defaultFolders.Add("Images", true);
-            defaultFolders.Add("Music", true);
-            defaultFolders.Add("Programs", true);
-            defaultFolders.Add("Video", true);
-            defaultFolders.Add("Web", false);
+        public override string ToString() => Name;
 
-            return defaultFolders;
+        // Default folder set
+        public static Dictionary<string, bool> GetDefaultFolders()
+        {
+            return new Dictionary<string, bool>
+            {
+                { "Compressed", true },
+                { "Database", false },
+                { "Documents", true },
+                { "Ebook", false },
+                { "Font", false },
+                { "Images", true },
+                { "Music", true },
+                { "Programs", true },
+                { "Video", true },
+                { "Web", false }
+            };
         }
 
-        public override string ToString()
+        // Save to JSON
+        public static void SavePresets()
         {
-            return Name;
+            string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "userPresets.json");
+            string json = JsonConvert.SerializeObject(presets, Formatting.Indented);
+            File.WriteAllText(jsonPath, json);
+        }
+
+        // Load from JSON or defaults
+        public static void LoadOrCreatePresets()
+        {
+            string jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "userPresets.json");
+
+            if (File.Exists(jsonPath))
+            {
+                try
+                {
+                    string json = File.ReadAllText(jsonPath);
+                    var loaded = JsonConvert.DeserializeObject<List<Preset>>(json);
+
+                    if (loaded != null && loaded.Count > 0)
+                    {
+                        presets.Clear();
+                        presets.AddRange(loaded);
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load presets: {ex.Message}");
+                }
+            }
+
+            // Fallback to defaults
+            presets.Clear();
+            var defaultFolders = GetDefaultFolders();
+            var defaultPreset = new Preset("Default");
+
+            foreach (var kvp in defaultFolders)
+            {
+                defaultPreset.Folders.Add(new Folder(kvp.Key, new List<Extension>(), kvp.Value));
+            }
+
+            SavePresets();
         }
     }
 }
